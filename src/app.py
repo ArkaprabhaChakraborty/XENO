@@ -28,7 +28,7 @@ def mine():
         'index': block['index'],
         'transactions': block['transaction'],
         'proof': block['proof'],
-        'prev_hash': block['prev_hash']
+        'prev_hash': block['previous_hash']
     }
 
     return jsonify(response), 200
@@ -42,7 +42,6 @@ def mine():
 def new_transaction():
     values = request.get_json()
     req = ['sender','recipient','amount']
-
     if not all(k in values for k in req):
         return 'missing values', 400
 
@@ -64,14 +63,11 @@ def full_chain():
 @app.route('/nodes/register', methods=['POST'])
 def register_nodes():
     values = request.get_json()
-
     nodes = values.get('nodes')
     if nodes is None:
         return "Error: Please supply a valid list of nodes", 400
-
     for node in nodes:
         blockchain.register_node(node)
-
     response = {
         'message': 'New nodes have been added',
         'total_nodes': list(blockchain.nodes),
